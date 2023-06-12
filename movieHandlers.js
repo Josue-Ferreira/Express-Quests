@@ -69,6 +69,27 @@ const createMovie = (req, res) => {
     })
 }
 
+const updateMovie = (req, res) => {
+  const id = parseInt(req.params.id);
+  const {title, director, year, color, duration} = req.body;
+
+  database
+    .query(`UPDATE movies SET title=?, director=?, year=?, color=?, duration=? WHERE id=${id}`,
+    [title, director, year, color, duration])
+    .then(([result]) => {
+      if(result.affectedRows == 0)
+        res.sendStatus(404);
+      else {
+        res.location("/api/movies/"+toto[0].insertId);
+        res.sendStatus(200);
+      }
+    })
+    .catch(err =>{
+      console.log(err)
+      res.sendStatus(500);
+    })
+}
+
 const getUsers = (req, res) => {
   database
     .query("SELECT * FROM users")
@@ -110,6 +131,7 @@ module.exports = {
   getMovies,
   getMovieById,
   createMovie,
+  updateMovie,
   getUsers,
   getUserById,
   createUser
