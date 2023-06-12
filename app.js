@@ -23,6 +23,8 @@ app.get("/api/users/:id", movieHandlers.getUserById);
 
 app.post("/api/movies", movieHandlers.createMovie);
 
+app.post("/api/users", movieHandlers.createUser);
+
 app.listen(port, (err) => {
   if (err) {
     console.error("Something bad happened");

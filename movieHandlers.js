@@ -91,12 +91,26 @@ const getUserById = (req, res) => {
     .catch(err => res.status(500).send("Error retrieving data from database"));
 }
 
-
+const createUser = (req, res) => {
+  const {firstname, lastname, email, city, language} = req.body;
+  database
+    .query("INSERT INTO users(firstname, lastname, email, city, language) VALUES (?,?,?,?,?)", 
+    [firstname, lastname, email, city, language])
+    .then(([result]) => {
+      res.location("/api/users/"+result.insertId);
+      res.sendStatus(201);
+    })
+    .catch(err => {
+      console.error(err)
+      res.sendStatus(500);
+    })
+}
 
 module.exports = {
   getMovies,
   getMovieById,
   createMovie,
   getUsers,
-  getUserById
+  getUserById,
+  createUser
 };
