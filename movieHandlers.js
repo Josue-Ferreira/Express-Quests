@@ -127,6 +127,25 @@ const createUser = (req, res) => {
     })
 }
 
+const updateUser = (req, res) => {
+  const id = req.params.id;
+  const {firstname, lastname, email, city, language} = req.body;
+
+  database
+    .query("UPDATE users SET firstname=?, lastname=?, email=?, city=?, language=? WHERE id="+id,
+    [firstname, lastname, email, city, language])
+    .then(([result]) => {
+      if(result.affectedRows == 0)
+        res.sendStatus(404);
+      else
+        res.sendStatus(200);
+    })
+    .catch(e =>{
+      console.error(e)
+      res.sendStatus(500);
+    })
+}
+
 module.exports = {
   getMovies,
   getMovieById,
@@ -134,5 +153,6 @@ module.exports = {
   updateMovie,
   getUsers,
   getUserById,
-  createUser
+  createUser,
+  updateUser
 };
