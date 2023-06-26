@@ -74,8 +74,8 @@ const updateMovie = (req, res) => {
   const {title, director, year, color, duration} = req.body;
 
   database
-    .query(`UPDATE movies SET title=?, director=?, year=?, color=?, duration=? WHERE id=${id}`,
-    [title, director, year, color, duration])
+    .query('UPDATE movies SET title=?, director=?, year=?, color=?, duration=? WHERE id=?',
+    [title, director, year, color, duration,id])
     .then(([result]) => {
       if(result.affectedRows == 0)
         res.sendStatus(404);
@@ -90,9 +90,23 @@ const updateMovie = (req, res) => {
     })
 }
 
+const deleteMovie = (req,res) => {
+  const id = parseInt(req.params.id);
+  database
+    .query('DELETE FROM movies WHERE id=?', [id])
+    .then((err, results, fields) => {
+        res.sendStatus(200);
+    })
+    .catch(err => {
+      console.error(err);
+      res.sendStatus(500);
+    })
+}
+
 module.exports = {
   getMovies,
   getMovieById,
   createMovie,
-  updateMovie
+  updateMovie,
+  deleteMovie
 };
