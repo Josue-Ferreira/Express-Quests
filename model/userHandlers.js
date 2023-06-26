@@ -41,7 +41,8 @@ const updateUser = (req, res) => {
     const id = req.params.id;
     const {firstname, lastname, email, city, language, hashedPassword} = req.body;
 
-    database
+    if(req.payload.sub == id){
+      database
         .query("UPDATE users SET firstname=?, lastname=?, email=?, city=?, language=?, hashedPassword=? WHERE id="+id,
         [firstname, lastname, email, city, language, hashedPassword])
         .then(([result]) => {
@@ -54,11 +55,49 @@ const updateUser = (req, res) => {
         console.error(e)
         res.sendStatus(500);
         })
+    }else{
+      res.sendStatus(403);
+    }  
+}
+
+const getUserByEmailWithPasswordAndPassToNext = (req, res, next) => {
+  const {email} = req.body;
+  database
+    .query("SELECT * FROM users WHERE email=?", [email])
+    .then(([user]) => {
+      if(user[0] != null){
+        req.body.user = user[0];
+        next();
+      }else{
+        res.sendStatus(401);
+      }
+    })
+    .catch(err => res.status(500).send("Error retrieving data from database"));
+}
+
+const deleteUser = (req,res) => {
+  const id = req.params.id;
+
+  if(req.payload.sub == id){
+    database
+    .query('DELETE FROM users WHERE id=?', [id])
+    .then((err, results, fields) => {
+        res.sendStatus(200);
+    })
+    .catch(err => {
+      console.error(err)
+      res.sendStatus(500);
+    })
+  }else{
+    res.sendStatus(403);
+  }
 }
 
 module.exports={
   getUsers,
   getUserById,
   createUser,
-  updateUser
+  updateUser,
+  getUserByEmailWithPasswordAndPassToNext,
+  deleteUser
 }
